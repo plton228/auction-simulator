@@ -31,3 +31,26 @@ class Participant:
             self.balance -= bid_amount
             return True
         return False
+
+class Auction:
+    def __init__(self):
+        self.lots = []
+        self.participants = []
+
+    def add_lot(self, lot):
+        self.lots.append(lot)
+
+    def add_participant(self, participant):
+        self.participants.append(participant)
+
+    def get_lot_info(self, lot_name):
+        for lot in self.lots:
+            if lot.name == lot_name:
+                return lot
+        return None
+
+    def get_participant_info(self, participant_name):
+        for participant in self.participants:
+            if participant.name == participant_name:
+                return participant
+        return None
