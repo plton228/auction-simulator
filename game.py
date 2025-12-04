@@ -1,11 +1,11 @@
 class Lot:
-    def __init__(self, name, start_price, leader):
+    def __init__(self, name, start_price, bid_step, leader=None, current_bid=None):
         self.name = name
         self.start_price = start_price
-        self.leader = None
+        self.bid_step = bid_step
 
     def __repr__(self):
-        return f"Lot(name={self.name}, start_price={self.start_price}, leader={self.leader})"
+        return f"Lot(name={self.name}, start_price={self.start_price}, leader={self.leader}), current_bid={self.current_bid})"
     
     def update_leader(self, name, bin):
         if bin >= self.start_price:
