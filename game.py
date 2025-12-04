@@ -1,3 +1,5 @@
+import random
+
 class Lot:
     def __init__(self, name, start_price, bid_step, leader=None, current_bid=0):
         self.name = name
@@ -57,20 +59,14 @@ class Auction:
         return None
 
 class bot(Participant):
-    def __init__(self, name, balance, strategy):
+    def __init__(self, name, balance, strategy='conservative'):
         super().__init__(name, balance)
-        self.strategy = strategy 
+        self.strategy = strategy
+    
+    def make_bid(self, lot):
+        bit_amount=0
+        min_required = lot.current_bid + lot.bid_step
 
-    def decide_bid(self, lot):
         if self.strategy == "aggressive":
-            return lot.current_bid + lot.bid_step * 2
-        elif self.strategy == "conservative":
-            return lot.current_bid + lot.bid_step
-        else:
-            return 0 
-
-    def place_bid(self, lot):
-        bid_amount = self.decide_bid(lot)
-        if bid_amount > 0:
-            return super().place_bid(lot, bid_amount)
-        return False
+            aggrissive_step = lot.bid_step*2
+            bit_amount=lot.current_bid + aggrissive_step
