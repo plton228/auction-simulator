@@ -1,5 +1,5 @@
 class Lot:
-    def __init__(self, name, start_price, bid_step, leader=None, current_bid=None):
+    def __init__(self, name, start_price, bid_step, leader=None, current_bid=0):
         self.name = name
         self.start_price = start_price
         self.bid_step = bid_step
@@ -9,8 +9,10 @@ class Lot:
     
     def update_leader(self, name, bin):
         if bin >= self.start_price:
-            self.leader = name
-            return True
+            if bin >= self.current_bid + self.bid_step:
+                self.leader = name
+                self.current_bid = bin
+                return True
         else:
             print("Bid is lower than starting price.")
             return False
