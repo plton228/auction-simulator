@@ -55,3 +55,22 @@ class Auction:
             if participant.name == participant_name:
                 return participant
         return None
+
+class bot(Participant):
+    def __init__(self, name, balance, strategy):
+        super().__init__(name, balance)
+        self.strategy = strategy 
+
+    def decide_bid(self, lot):
+        if self.strategy == "aggressive":
+            return lot.current_bid + lot.bid_step * 2
+        elif self.strategy == "conservative":
+            return lot.current_bid + lot.bid_step
+        else:
+            return 0 
+
+    def place_bid(self, lot):
+        bid_amount = self.decide_bid(lot)
+        if bid_amount > 0:
+            return super().place_bid(lot, bid_amount)
+        return False
