@@ -8,11 +8,10 @@ class Lot:
         return f"Lot(name={self.name}, start_price={self.start_price}, leader={self.leader}), current_bid={self.current_bid})"
     
     def update_leader(self, name, bin):
-        if bin >= self.start_price:
-            if bin >= self.current_bid + self.bid_step:
-                self.leader = name
-                self.current_bid = bin
-                return True
+        if bin >= self.start_price and bin >= self.current_bid + self.bid_step:
+            self.leader = name
+            self.current_bid = bin
+            return True
         else:
             print("Bid is lower than starting price.")
             return False
