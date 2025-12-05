@@ -17,23 +17,7 @@ class Lot:
         else:
             print("Bid is lower than starting price.")
             return False
-
-class Participant:
-    def __init__(self, name, balance):
-        self.name = name
-        self.balance = balance
-
-    def __repr__(self):
-        return f"Participant(name={self.name}, balance={self.balance})"
-    
-    def place_bid(self, lot, bid_amount):
-        if bid_amount > self.balance:
-            print("Insufficient balance to place the bid.")
-            return False
-        if lot.update_leader(self.name, bid_amount):
-            self.balance -= bid_amount
-            return True
-        return False
+        
 
 class Auction:
     def __init__(self):
@@ -57,6 +41,25 @@ class Auction:
             if participant.name == participant_name:
                 return participant
         return None
+    
+
+class Participant:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
+
+    def __repr__(self):
+        return f"Participant(name={self.name}, balance={self.balance})"
+    
+    def place_bid(self, lot, bid_amount):
+        if bid_amount > self.balance:
+            print("Insufficient balance to place the bid.")
+            return False
+        if lot.update_leader(self.name, bid_amount):
+            self.balance -= bid_amount
+            return True
+        return False
+
 
 class bot(Participant):
     def __init__(self, name, balance, strategy='conservative'):
@@ -64,9 +67,18 @@ class bot(Participant):
         self.strategy = strategy
     
     def make_bid(self, lot):
+        if lot.leader == self.name:
+            return False
+        if self.balance < lot.current + lot.bid_step:
+            return False
+        
         bit_amount=0
-        min_required = lot.current_bid + lot.bid_step
-
+        
         if self.strategy == "aggressive":
             aggrissive_step = lot.bid_step*2
-            bit_amount=lot.current_bid + aggrissive_step
+            bit_amount= lot.current_bid + aggrissive_step
+        if self.strategy == 'conservative':
+            bit_amount = lot.current_bid + lot.bid_step
+        if self.strategy == "random":
+            max_step = lot.bid_step * 4
+            random_bid = lot.current_bid + random.randrange(lot.bid_step, max_step+1)
