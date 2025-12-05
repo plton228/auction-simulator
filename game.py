@@ -75,10 +75,15 @@ class bot(Participant):
         bit_amount=0
         
         if self.strategy == "aggressive":
-            aggrissive_step = lot.bid_step*2
-            bit_amount= lot.current_bid + aggrissive_step
-        if self.strategy == 'conservative':
+            bit_amount= lot.current_bid + lot.bid_step*2
+        elif self.strategy == 'conservative':
             bit_amount = lot.current_bid + lot.bid_step
-        if self.strategy == "random":
-            max_step = lot.bid_step * 4
-            random_bid = lot.current_bid + random.randrange(lot.bid_step, max_step+1)
+        elif self.strategy == "random":
+            bit_amount = lot.current_bid + random.randrange(lot.bid_step, lot.bid_step * 3+1)
+        else:
+             print(f"({self.name}) Невідома стратегія: {self.strategy}.")
+             return False
+        if bid_amount > self.balance:
+            bid_amount = self.balance
+        if bid_amount >= lot.current_bid + lot.bid_step:
+             return self.place_bid(lot, bid_amount)
