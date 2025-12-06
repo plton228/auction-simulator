@@ -1,10 +1,12 @@
 import random
 
 class Lot:
-    def __init__(self, name, start_price, bid_step, leader=None, current_bid=0):
+    def __init__(self, name, start_price, bid_step):
         self.name = name
         self.start_price = start_price
         self.bid_step = bid_step
+        self.current_bid = start_price
+        self.leader = None
 
     def __repr__(self):
         return f"Lot(name={self.name}, start_price={self.start_price}, leader={self.leader}), current_bid={self.current_bid})"
@@ -42,6 +44,7 @@ class Auction:
                 return participant
         return None
     
+    
 
 class Participant:
     def __init__(self, name, balance):
@@ -56,7 +59,6 @@ class Participant:
             print("Insufficient balance to place the bid.")
             return False
         if lot.update_leader(self.name, bid_amount):
-            self.balance -= bid_amount
             return True
         return False
 
@@ -69,7 +71,7 @@ class bot(Participant):
     def make_bid(self, lot):
         if lot.leader == self.name:
             return False
-        if self.balance < lot.current + lot.bid_step:
+        if self.balance < lot.current_bid + lot.bid_step:
             return False
         
         bit_amount=0
@@ -87,3 +89,4 @@ class bot(Participant):
             bid_amount = self.balance
         if bid_amount >= lot.current_bid + lot.bid_step:
              return self.place_bid(lot, bid_amount)
+        return False
