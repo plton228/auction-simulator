@@ -47,6 +47,14 @@ class Auction:
             if participant.name == participant_name:
                 return participant
         return None
+    
+    def announce_winners(self):
+        for lot in self.lots:
+            if lot.leader:
+                print(f"The winner of the lot '{lot.name}' is {lot.leader} with a bid of {lot.current_bid}.")
+                self.get_participant_info(lot.leader).balance -= lot.current_bid
+            else:
+                print(f"The lot '{lot.name}' had no bids.")
 class Participant:
     def __init__(self, name, balance):
         self.name = name
