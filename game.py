@@ -55,6 +55,9 @@ class Auction:
                 self.get_participant_info(lot.leader).balance -= lot.current_bid
             else:
                 print(f"The lot '{lot.name}' had no bids.")
+        for p in self.participants:
+            print("final capital of participants:")
+            print(f"{p.name}: {p.balance:}")
 class Participant:
     def __init__(self, name, balance):
         self.name = name
