@@ -23,7 +23,8 @@ class Lot:
         else:
             print("Bid is lower than starting price or current bid.")
             return False
-    
+        
+
 class Auction:
     def __init__(self):
         self.lots = []
@@ -46,8 +47,6 @@ class Auction:
             if participant.name == participant_name:
                 return participant
         return None
-    
-    
 
 class Participant:
     def __init__(self, name, balance):
@@ -66,7 +65,7 @@ class Participant:
         return False
 
 
-class bot(Participant):
+class Bot(Participant):
     def __init__(self, name, balance, strategy='conservative'):
         super().__init__(name, balance)
         self.strategy = strategy
@@ -86,10 +85,35 @@ class bot(Participant):
         elif self.strategy == "random":
             bit_amount = lot.current_bid + random.randrange(lot.bid_step, lot.bid_step * 3+1)
         else:
-             print(f"({self.name}) Невідома стратегія: {self.strategy}.")
+             print(f"({self.name}) Unknown strategy: {self.strategy}.")
              return False
         if bid_amount > self.balance:
             bid_amount = self.balance
         if bid_amount >= lot.current_bid + lot.bid_step:
              return self.place_bid(lot, bid_amount)
         return False
+    
+def simulate_auction(auction, rounds=10):
+    auction = Auction()
+    lot1 = Lot("Car", 1000, 100)
+    lot2 = Lot("House", 5000, 500)
+    lot3 = Lot("Bike", 300, 50)
+    lot4 = Lot("picture", 800, 80)
+    auction.add_lot(lot1), auction.add_lot(lot2), auction.add_lot(lot3), auction.add_lot(lot4)
+
+    bot1 = Bot("Stive", 10000, strategy='aggressive')
+    bot2 = Bot("Alice", 9000,)
+    bot3 = Bot("Bob", 11000, strategy='random')
+    auction.add_participant(bot1), auction.add_participant(bot2), auction.add_participant(bot3)
+
+    player_participant = Participant("Platon", 13000)
+    auction.add_participant(participant)
+
+    for _ in range(rounds):
+        for lot in auction.lots:
+            for p in auction.participants:
+                if isinstance(p, Bot):
+                    p.make_bid(lot)
+    
+    your_choice = input("Enter the lot you want to bid on (Car, House, Bike, picture): ")
+    your_bid = int(print("Enter your bid: "))
