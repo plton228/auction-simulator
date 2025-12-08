@@ -11,16 +11,19 @@ class Lot:
     def __repr__(self):
         return f"Lot(name={self.name}, start_price={self.start_price}, leader={self.leader}), current_bid={self.current_bid})"
     
-    def update_leader(self, name, bin):
-        if bin >= self.start_price and bin >= self.current_bid + self.bid_step:
+    def update_leader(self, name, bid_amount):
+        if bid_amount >= self.start_price and self.leader is None:
             self.leader = name
-            self.current_bid = bin
+            self.current_bid = bid_amount
+            return True
+        elif bid_amount >= self.current_bid + self.bid_step:
+            self.leader = name
+            self.current_bid = bid_amount
             return True
         else:
-            print("Bid is lower than starting price.")
+            print("Bid is lower than starting price or current bid.")
             return False
-        
-
+    
 class Auction:
     def __init__(self):
         self.lots = []
