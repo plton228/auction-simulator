@@ -47,7 +47,6 @@ class Auction:
             if participant.name == participant_name:
                 return participant
         return None
-
 class Participant:
     def __init__(self, name, balance):
         self.name = name
@@ -114,6 +113,15 @@ def simulate_auction(auction, rounds=10):
             for p in auction.participants:
                 if isinstance(p, Bot):
                     p.make_bid(lot)
+
+    def get_user_bid():
+        try:
+            your_choice_lot = input("Enter the lot you want to bid on (Car, House, Bike, picture: ")
+            your_bid = int(print("Enter your bid: "))
+            p = player_participant.place_bid(your_choice_lot, your_bid)
+            return p
+        except ValueError:
+            print("Invalid input. Please enter a valid lot name and bid amount.")
+            return get_user_bid()
     
-    your_choice = input("Enter the lot you want to bid on (Car, House, Bike, picture): ")
-    your_bid = int(print("Enter your bid: "))
+    
