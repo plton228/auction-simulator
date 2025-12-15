@@ -57,12 +57,15 @@ class Auction:
         for lot in self.lots:
             if lot.leader:
                 print(f"The winner of the lot '{lot.name}' is {lot.leader} with a bid of {lot.current_bid}.")
-                self.get_participant_info(lot.leader).balance -= lot.current_bid
+                winner = self.get_participant_info(lot.leader)
+                if winner:
+                    winner.balance -= lot.current_bid
             else:
                 print(f"The lot '{lot.name}' had no bids.")
+        print("\nFinal capital of participants:")
         for p in self.participants:
-            print("final capital of participants:")
-            print(f"{p.name}: {p.balance:}")
+            print(f"{p.name}: {p.balance}")
+
 class Participant:
     def __init__(self, name, balance):
         self.name = name
@@ -85,25 +88,27 @@ class Bot(Participant):
         super().__init__(name, balance)
         self.strategy = strategy
     
-    def make_bid(self, lot):
+    def make_bid(self, lot):    
         if lot.leader == self.name:
             return False
         if self.balance < lot.current_bid + lot.bid_step:
             return False
         
-        bid_amount=0
+        bid_amount = 0
         
         if self.strategy == "aggressive":
-            bid_amount= lot.current_bid + lot.bid_step*2
+            bid_amount = lot.current_bid + lot.bid_step * 2
         elif self.strategy == 'conservative':
             bid_amount = lot.current_bid + lot.bid_step
         elif self.strategy == "random":
-            bid_amount = lot.current_bid + random.randrange(lot.bid_step, lot.bid_step * 3+1)
+            bid_amount = lot.current_bid + random.randrange(lot.bid_step, lot.bid_step * 3 + 1)
         else:
              print(f"({self.name}) Unknown strategy: {self.strategy}.")
              return False
+        
         if bid_amount > self.balance:
             bid_amount = self.balance
+            
         if bid_amount >= lot.current_bid + lot.bid_step:
              return self.place_bid(lot, bid_amount)
         return False
@@ -113,42 +118,54 @@ def simulate_auction(auction, rounds=10):
     lot2 = Lot("House", 5000, 500)
     lot3 = Lot("Bike", 300, 50)
     lot4 = Lot("picture", 800, 80)
-    auction.add_lot(lot1), auction.add_lot(lot2), auction.add_lot(lot3), auction.add_lot(lot4)
+    auction.add_lot(lot1)
+    auction.add_lot(lot2)
+    auction.add_lot(lot3)
+    auction.add_lot(lot4)
 
     bot1 = Bot("Stive", 10000, strategy='aggressive')
     bot2 = Bot("Alice", 9000, strategy='conservative')
     bot3 = Bot("Bob", 11000, strategy='random')
-    auction.add_participant(bot1), auction.add_participant(bot2), auction.add_participant(bot3)
+    auction.add_participant(bot1)
+    auction.add_participant(bot2)
+    auction.add_participant(bot3)
 
     player_participant = Participant("Platon", 13000)
     auction.add_participant(player_participant)
 
     def get_user_bid():
-        try:
-            your_bid = int(input("Enter your bid: "))
-            lot_object = auction.get_lot_info(input (f"Enter the lot you want to bid on {auction.lots}: "))
+        while True:
+            try:
+                print(f"\nAvailable lots: {[l.name for l in auction.lots]}")
+                user_input_lot = input("Enter the lot you want to bid on (or 'skip'): ")
+                if user_input_lot.lower() == 'skip':
+                    return False
 
-            if lot_object is None:
-                print("Lot not found. Please enter a valid lot name.")
-                return get_user_bid()
-            
-            player_participant.place_bid(lot_object, your_bid)
-            return True
-        except ValueError:
-            print("Invalid input. Please enter a valid lot name and bid amount.")
-            return get_user_bid()
+                lot_object = auction.get_lot_info(user_input_lot)
+
+                if lot_object is None:
+                    print("Lot not found. Please enter a valid lot name.")
+                    continue 
+                
+                your_bid = int(input(f"Current bid for {lot_object.name} is {lot_object.current_bid}. Enter your bid: "))
+                player_participant.place_bid(lot_object, your_bid)
+                return True
+                
+            except ValueError:
+                print("Invalid input. Please enter a number for the bid.")
+                continue
         
-    for _ in range(rounds):
+    for i in range(rounds):
+        print(f"\n--- Round {i+1} ---")
+        
         for lot in auction.lots:
             for p in auction.participants:
                 if isinstance(p, Bot):
                     p.make_bid(lot)
-                elif p.name == "Platon":
-                     get_user_bid()
+        get_user_bid()
 
     auction.announce_winners()
 
 if __name__ == "__main__":
     auction = Auction()
     simulate_auction(auction, rounds=10)
-    
