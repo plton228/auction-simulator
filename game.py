@@ -87,8 +87,11 @@ class Bot(Participant):
     def __init__(self, name, balance, strategy='conservative'):
         super().__init__(name, balance)
         self.strategy = strategy
+        self.decision_pool = (True, False)
     
-    def make_bid(self, lot):    
+    def make_bid(self, lot):
+        if not random.choice(self.decision_pool):
+            return False    
         if lot.leader == self.name:
             return False
         if self.balance < lot.current_bid + lot.bid_step:
@@ -137,7 +140,7 @@ def simulate_auction(auction, rounds=10):
         while True:
             try:
                 print(f"\nAvailable lots: {[l.name for l in auction.lots]}")
-                user_input_lot = input("Enter the lot you want to bid on (or 'skip'): ")
+                user_input_lot = input(f"Enter the lot you want to bid on ({', '.join([l.name for l in auction.lots])} or 'skip'): ")
                 if user_input_lot.lower() == 'skip':
                     return False
 
@@ -145,19 +148,25 @@ def simulate_auction(auction, rounds=10):
 
                 if lot_object is None:
                     print("Lot not found. Please enter a valid lot name.")
-                    continue 
+                    return get_user_bid()
                 
                 your_bid = int(input(f"Current bid for {lot_object.name} is {lot_object.current_bid}. Enter your bid: "))
+                if your_bid > player_participant.balance:
+                    print("You do not have enough balance for this bid.")
+                    return get_user_bid()
+                if your_bid < lot_object.start_price + lot_object.bid_step:
+                    print("Your bid is too low. It must be at least the starting price plus the bid step.")
+                    return get_user_bid()
+                
                 player_participant.place_bid(lot_object, your_bid)
                 return True
                 
             except ValueError:
                 print("Invalid input. Please enter a number for the bid.")
-                continue
+                return get_user_bid()
         
     for i in range(rounds):
-        print(f"\n--- Round {i+1} ---")
-        
+        print(f"Round {i+1}")
         for lot in auction.lots:
             for p in auction.participants:
                 if isinstance(p, Bot):
